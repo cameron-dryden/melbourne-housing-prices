@@ -63,7 +63,7 @@ python process_data.py melbourne_housing.csv MelbourneHousing.db
 
 ```bash
 cd models
-python train_classifier.py ../data/MelbourneHousing.db predictor.pkl
+python train_model.py ../data/MelbourneHousing.db predictor.pkl
 ```
 
 | Parameter    | Required | Description                                                                                                    |
