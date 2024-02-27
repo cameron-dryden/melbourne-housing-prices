@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if result %}
+<div class="page-header py-4">
+    <h2 class="text-center">Your property is worth:</h2>
+    <h1 class="text-center"> $AU {{'{:20,.2f}'.format(result)}}</h1>
+</div>
+
+<div class="py-4" style="display: flex; justify-content: center">
+    <a class="btn btn-primary" href="/predict" role="button">Go Back</a>
+</div>
+{% else %}
+<div class="page-header py-4">
+    <h1 class="text-center">Get price predictions for your property</h1>
+</div>
+
+<form action="/predict" method="post" class="px-3">
+    <div class="row">
+        <div class="col">
+            <div class="form-floating mb-3">
+                <input name="bedrooms" placeholder="Bedrooms*" type="number" class="form-control" id="bedrooms"
+                    step="0.5" min="0" required>
+                <label for="bedrooms">Bedrooms*</label>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-floating mb-3">
+                <input name="bathrooms" placeholder="Bathrooms*" type="number" class="form-control" id="bathrooms"
+                    step="0.5" min="0" required>
+                <label for="bathrooms">Bathrooms*</label>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-floating mb-3">
+                <input name="car" placeholder="Car spots*" type="number" class="form-control" id="car" step="0.5"
+                    min="0" required>
+                <label for="car">Car spots*</label>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-floating input-group mb-3">
+                <input name="landsize" placeholder="Landsize*" type="number" id="landsize" class="form-control"
+                    step="0.5" min="0" required>
+                <span class="input-group-text" id="basic-addon2">m²</span>
+                <label for="landsize">Landsize*</label>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-floating mb-3">
+                <input name="age" placeholder="Property Age" type="number" class="form-control" id="age" min="0">
+                <label for="age">Property Age</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="mb-3">
+                <label for="suburb" class="form-label">Suburb*</label>
+                <select name="suburb" class="form-select" id="suburb" required>
+                    <option selected></option>
+                    {%for suburb in suburbs %}
+                    <option value="{{suburb}}">{{suburb}}</option>
+                    {%endfor%}
+                </select>
+            </div>
+        </div>
+        <div class="col">
+            <div class="mb-3">
+                <label for="type" class="form-label">Type*</label>
+                <select name="type" class="form-select" id="type" required>
+                    <option selected></option>
+                    <option value="h">House</option>
+                    <option value="u">Unit</option>
+                    <option value="t">Town House</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col" style="display: flex; flex-direction: column; justify-content: center;">
+            <div class="form-floating mb-3">
+                <input name="latitude" placeholder="Latitude*" type="text" id="latitude" class="form-control readonly"
+                    required>
+                <label for="latitude">Latitude*</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input name="longitude" placeholder="Longitude*" type="text" id="longitude"
+                    class="form-control readonly" required>
+                <label for="longitude">Longitude*</label>
+            </div>
+        </div>
+        <div class="col-8">
+            <h6 class="text-center">Select your property location</h6>
+            <div id="map" style="height: 280px"></div>
+        </div>
+    </div>
+
+    <div class="py-4" style="display: flex; justify-content: center">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>
+
+<script lang="text/javascript">
+    $(".readonly").keydown(function (e) {
+        e.preventDefault();
+    });
+
+    var map = L.map('map').setView([-37.80457, 144.99681], 9);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    var marker = undefined;
+
+    function onMapClick(e) {
+
+        if (!marker) {
+            marker = L.marker(e.latlng).addTo(map);
+        } else {
+            marker.setLatLng(e.latlng)
+        }
+
+        $('#longitude').val(e.latlng.lng);
+        $('#latitude').val(e.latlng.lat);
+    }
+
+    map.on('click', onMapClick);
+</script>
+{% endif %}
+
+{% endblock %}
